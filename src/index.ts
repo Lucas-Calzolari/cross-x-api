@@ -3,6 +3,7 @@ import { authenticate, checkin, getClassesForDate, setToken } from './crossAPI'
 import {ArgumentParser} from 'argparse' 
 import { exit } from 'process';
 
+export * from './crossAPI';
 
 console.log("Start process: " + dayjs().format("YYYY-MM-DDTHH:mm:ss:SSSZ"))
 
@@ -40,54 +41,54 @@ if (targetMinute >= 60 || targetMinute < 0) {
     console.error("Invalid minute")
 }
 
-(async () => {
+// (async () => {
 
-    if (token) {
-        setToken(token)
-    } else {
-        await authenticate(email, password)
-    }
+//     if (token) {
+//         setToken(token)
+//     } else {
+//         await authenticate(email, password)
+//     }
 
-    const classes = await getClassesForDate(dayjs()) 
+//     const classes = await getClassesForDate(dayjs()) 
     
-    const targetClass = classes.find(classItem => classItem.start_time == targetTime)
-    if (!targetClass) {
-        console.error("Class not found");
-        exit();
-    } else {
-        console.log("Found class id: " +  targetClass.id)
-    }
+//     const targetClass = classes.find(classItem => classItem.start_time == targetTime)
+//     if (!targetClass) {
+//         console.error("Class not found");
+//         exit();
+//     } else {
+//         console.log("Found class id: " +  targetClass.id)
+//     }
     
-    let checkinTime = dayjs()
-    checkinTime = checkinTime.hour(targetHour);
-    checkinTime = checkinTime.minute(targetMinute);
-    checkinTime = checkinTime.second(0);
-    checkinTime = checkinTime.millisecond(0);
-    checkinTime = checkinTime.add(targetClass?.class_opening || 0, 'minutes')
+//     let checkinTime = dayjs()
+//     checkinTime = checkinTime.hour(targetHour);
+//     checkinTime = checkinTime.minute(targetMinute);
+//     checkinTime = checkinTime.second(0);
+//     checkinTime = checkinTime.millisecond(0);
+//     checkinTime = checkinTime.add(targetClass?.class_opening || 0, 'minutes')
 
-    const remainingTime = checkinTime.diff(dayjs(), 'millisecond');
+//     const remainingTime = checkinTime.diff(dayjs(), 'millisecond');
 
-    console.log({remainingTime})
-    const success = await new Promise((s,f) => {
-        let success = false;
-        setTimeout(async () => {        
-            let attempts = 0;
-            console.log("attempt")
-            while(!(success = await checkin(targetClass?.id as number))) {
-                attempts++;
-                if ( attempts > 5) {
-                    console.log("Maximum attempts reached: " + attempts)
-                    break;
-                }
-            }
-            s(success)
-        }, remainingTime);
-    })
+//     console.log({remainingTime})
+//     const success = await new Promise((s,f) => {
+//         let success = false;
+//         setTimeout(async () => {        
+//             let attempts = 0;
+//             console.log("attempt")
+//             while(!(success = await checkin(targetClass?.id as number))) {
+//                 attempts++;
+//                 if ( attempts > 5) {
+//                     console.log("Maximum attempts reached: " + attempts)
+//                     break;
+//                 }
+//             }
+//             s(success)
+//         }, remainingTime);
+//     })
 
-    if (success){
-        console.log("Success")
-    } else {
-        console.log("Fail")
-    }
-    console.log("End process: " + dayjs().format("YYYY-MM-DDTHH:mm:ss:SSSZ"))
-})()
+//     if (success){
+//         console.log("Success")
+//     } else {
+//         console.log("Fail")
+//     }
+//     console.log("End process: " + dayjs().format("YYYY-MM-DDTHH:mm:ss:SSSZ"))
+// })()
